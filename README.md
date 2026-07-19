@@ -1,6 +1,6 @@
 # DigitalOcean Spaces Sync
 This WordPress plugin syncs your media library with [DigitalOcean 
-Spaces](https://goo.gl/SX2UwH) Container.
+Spaces](https://goo.gl/SX2UwH).
 
 ## Current changes
 This fork carries PHP 8.x compatibility fixes on top of the original 2.2.1 
@@ -21,9 +21,9 @@ reapplication.
 
 ## Description
 This WordPress plugin syncs your media library with [DigitalOcean 
-Spaces](https://goo.gl/SX2UwH) Container. It allows you to simuntanously upload 
+Spaces](https://goo.gl/SX2UwH). It allows you to simuntaneously upload 
 and delete files, replacing public media URL with relative cloud storage links. 
-You can choose between two options, to keep local copy of the files, or to 
+Cchoose between two options: to keep local copy of the files, or to 
 delete them and keep files only in cloud storage.
 
 In order to use this plugin, you have to create a DigitalOcean Spaces API key.
