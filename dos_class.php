@@ -176,23 +176,30 @@ class DOS
 
   public function filter_wp_unique_filename($filename)
   {
+    try {
 
-    $upload_dir = wp_upload_dir();
-    $subdir = $upload_dir['subdir'];
+      $upload_dir = wp_upload_dir();
+      $subdir = $upload_dir['subdir'];
 
-    $filesystem = DOS_Filesystem::get_instance($this->key, $this->secret, $this->container, $this->endpoint);
+      $filesystem = DOS_Filesystem::get_instance($this->key, $this->secret, $this->container, $this->endpoint);
 
-    $number = 1;
-    $new_filename = $filename;
-    $fileparts = pathinfo($filename);
-    $cdnPath = rtrim($this->storage_path, '/') . '/' . ltrim($subdir, '/') . '/' . $new_filename;
-    while ($filesystem->has($cdnPath)) {
-      $new_filename = $fileparts['filename'] . "-$number." . $fileparts['extension'];
-      $number = (int) $number + 1;
+      $number = 1;
+      $new_filename = $filename;
+      $fileparts = pathinfo($filename);
       $cdnPath = rtrim($this->storage_path, '/') . '/' . ltrim($subdir, '/') . '/' . $new_filename;
-    }
+      while ($filesystem->has($cdnPath)) {
+        $new_filename = $fileparts['filename'] . "-$number." . $fileparts['extension'];
+        $number = (int) $number + 1;
+        $cdnPath = rtrim($this->storage_path, '/') . '/' . ltrim($subdir, '/') . '/' . $new_filename;
+      }
 
-    return $new_filename;
+      return $new_filename;
+
+    } catch (\Throwable $e) {
+
+      error_log('do-spaces-sync: wp_unique_filename check failed, using original filename: ' . $e->getMessage());
+      return $filename;
+    }
   }
 
   public function filter_wp_get_attachment_url($url)
