@@ -1,0 +1,60 @@
+diff --git a/dos_class.php b/dos_class.php
+index 6427c65..2af612c 100644
+--- a/dos_class.php
++++ b/dos_class.php
+@@ -176,23 +176,30 @@ class DOS
+ 
+   public function filter_wp_unique_filename($filename)
+   {
++    try {
+ 
+-    $upload_dir = wp_upload_dir();
+-    $subdir = $upload_dir['subdir'];
++      $upload_dir = wp_upload_dir();
++      $subdir = $upload_dir['subdir'];
+ 
+-    $filesystem = DOS_Filesystem::get_instance($this->key, $this->secret, $this->container, $this->endpoint);
++      $filesystem = DOS_Filesystem::get_instance($this->key, $this->secret, $this->container, $this->endpoint);
+ 
+-    $number = 1;
+-    $new_filename = $filename;
+-    $fileparts = pathinfo($filename);
+-    $cdnPath = rtrim($this->storage_path, '/') . '/' . ltrim($subdir, '/') . '/' . $new_filename;
+-    while ($filesystem->has($cdnPath)) {
+-      $new_filename = $fileparts['filename'] . "-$number." . $fileparts['extension'];
+-      $number = (int) $number + 1;
++      $number = 1;
++      $new_filename = $filename;
++      $fileparts = pathinfo($filename);
+       $cdnPath = rtrim($this->storage_path, '/') . '/' . ltrim($subdir, '/') . '/' . $new_filename;
+-    }
++      while ($filesystem->has($cdnPath)) {
++        $new_filename = $fileparts['filename'] . "-$number." . $fileparts['extension'];
++        $number = (int) $number + 1;
++        $cdnPath = rtrim($this->storage_path, '/') . '/' . ltrim($subdir, '/') . '/' . $new_filename;
++      }
++
++      return $new_filename;
+ 
+-    return $new_filename;
++    } catch (\Throwable $e) {
++
++      error_log('do-spaces-sync: wp_unique_filename check failed, using original filename: ' . $e->getMessage());
++      return $filename;
++    }
+   }
+ 
+   public function filter_wp_get_attachment_url($url)
+diff --git a/vendor/guzzlehttp/promises/src/RejectedPromise.php b/vendor/guzzlehttp/promises/src/RejectedPromise.php
+index 2bc6508..5728765 100644
+--- a/vendor/guzzlehttp/promises/src/RejectedPromise.php
++++ b/vendor/guzzlehttp/promises/src/RejectedPromise.php
+@@ -13,7 +13,7 @@ class RejectedPromise implements PromiseInterface
+ 
+     public function __construct($reason)
+     {
+-        if (method_exists($reason, 'then')) {
++        if (is_object($reason) && method_exists($reason, 'then')) {
+             throw new \InvalidArgumentException(
+                 'You cannot create a RejectedPromise with a promise.');
+         }
